@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{sinatra-head}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Stephen Eley"]
@@ -26,14 +26,14 @@ Gem::Specification.new do |s|
      "lib/sinatra/head.rb",
      "lib/sinatra/head/data_helpers.rb",
      "lib/sinatra/head/tag_helpers.rb",
+     "sinatra-head.gemspec",
      "spec/sinatra/head_spec.rb",
      "spec/sinatra/javascripts_spec.rb",
      "spec/sinatra/stylesheet_spec.rb",
      "spec/sinatra/title_spec.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb",
-     "spec/support/dummy_app.rb",
-     "spec/title_spec.rb"
+     "spec/support/dummy_app.rb"
   ]
   s.homepage = %q{http://github.com/SFEley/sinatra-head}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -46,8 +46,7 @@ Gem::Specification.new do |s|
      "spec/sinatra/stylesheet_spec.rb",
      "spec/sinatra/title_spec.rb",
      "spec/spec_helper.rb",
-     "spec/support/dummy_app.rb",
-     "spec/title_spec.rb"
+     "spec/support/dummy_app.rb"
   ]
 
   if s.respond_to? :specification_version then
