@@ -61,6 +61,33 @@ module Sinatra
         end
       end
       
+      # Exposes an array of javascript sources.  Can be set at both the class and the instance (action) level.
+      # Full hyperlinks or relative filenames can be set; if relative, the final result will include the
+      # Sinatra stylesheet_path setting.
+      # @example Recommended usage
+      #   class MyApp < Sinatra::Base
+      #     register Sinatra::Head
+      #     javascripts << 'main.js'
+      #     javascripts << 'http://example.org/some_popular_script.js'
+      #
+      #     get '/form' do
+      #       javascripts << 'form.js'
+      #     end
+      #   end
+      def javascripts
+        @javascripts ||= Array(settings.javascripts.clone)
+      end
+      
+      # Returns the full path for a javascript source's filename, with the Sinatra `javascript_path` setting
+      # prepending it.  Full hyperlinks are not altered.
+      def expand_javascript_path(script)
+        if script =~ %r{^https?://}
+          script
+        else
+          File.join(settings.javascript_path, script)
+        end
+      end
+      
     end
     
   end

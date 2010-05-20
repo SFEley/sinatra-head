@@ -10,7 +10,7 @@ describe Sinatra::Head, "stylesheets" do
   
   class DummyFixture::DummyChild
     stylesheets << 'secondary.css'
-    set :stylesheet_path, '/assets/stylesheets'
+    set :stylesheet_path, '/stuff/stylesheets'
   end
   
   before(:each) do
@@ -33,7 +33,7 @@ describe Sinatra::Head, "stylesheets" do
 
   
   it "expands the assets path for relative filenames" do
-    @instance.expand_stylesheet_path(@instance.stylesheets.first).should == '/assets/stylesheets/main.css'
+    @instance.expand_stylesheet_path(@instance.stylesheets.first).should == '/stuff/stylesheets/main.css'
   end
   
   it "leaves fully qualified hyperlinks intact" do
@@ -42,19 +42,19 @@ describe Sinatra::Head, "stylesheets" do
   end
   
   it "knows how to make a tag" do
-    @instance.stylesheet_tag(@instance.stylesheets.first).should == "<link rel='stylesheet' href='/assets/stylesheets/main.css'>"
+    @instance.stylesheet_tag(@instance.stylesheets.first).should == "<link rel='stylesheet' href='/stuff/stylesheets/main.css' />"
   end
   
   it "knows how to make all the tags" do
     @instance.stylesheets << 'http://yahoo.com/yahoo_style.css'
-    @instance.stylesheet_tags.should == "<link rel='stylesheet' href='/assets/stylesheets/main.css'>\n<link rel='stylesheet' href='/assets/stylesheets/secondary.css'>\n<link rel='stylesheet' href='http://yahoo.com/yahoo_style.css'>"
+    @instance.stylesheet_tags.should == "<link rel='stylesheet' href='/stuff/stylesheets/main.css' />\n<link rel='stylesheet' href='/stuff/stylesheets/secondary.css' />\n<link rel='stylesheet' href='http://yahoo.com/yahoo_style.css' />"
   end
   
   it "shows up in the header" do
     visit '/'
     within 'head' do
-      page.should have_css("link[rel='stylesheet'][href='/assets/stylesheets/main.css']")
-      page.should have_css("link[rel='stylesheet'][href='/assets/stylesheets/secondary.css']")
+      page.should have_css("link[rel='stylesheet'][href='/stuff/stylesheets/main.css']")
+      page.should have_css("link[rel='stylesheet'][href='/stuff/stylesheets/secondary.css']")
     end
 
   end

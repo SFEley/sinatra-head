@@ -12,10 +12,18 @@ module Sinatra
       def head_tag
         <<-HEAD_TAG
         <head>
+          #{charset_tag}
           #{title_tag}
           #{stylesheet_tags}
+          #{javascript_tags}
         </head>
         HEAD_TAG
+      end
+      
+      # Spits out a <meta> tag with the named charset.  Defaults to UTF-8, but you can override it 
+      # with the Sinatra 'charset' setting.
+      def charset_tag
+        "<meta charset='#{settings.charset}' />"
       end
       
       # Spits out a <title> element with anything that's been added to the title by various actions.
@@ -30,12 +38,33 @@ module Sinatra
       #
       # @param [String] sheet
       def stylesheet_tag(sheet)
-        "<link rel='stylesheet' href='#{expand_stylesheet_path(sheet)}'>"
+        "<link rel='stylesheet' href='#{expand_stylesheet_path(sheet)}' />"
       end
       
-      # Spits out stylesheet tags for all defined stylesheets, one per line.
+      # Spits out stylesheet tags for all declared stylesheets, one per line.
       def stylesheet_tags
         stylesheets.collect{|s| stylesheet_tag(s)}.join("\n")
+      end
+      
+      # Spits out a <script src='filename'> element for the given javascript file.
+      # Relative filenames will be expanded with the Sinatra assets path, if set.
+      # 
+      # EXCEPTION: If an item in 'javascripts' contains a semicolon, it will be interpreted
+      # as Javascript source code instead of a filename, and will be included inline in the
+      # script tag instead of on the 'src' element.
+      # 
+      # @param [String] script
+      def javascript_tag(script)
+        if script.include?(';')
+          "<script>\n#{script}\n</script>"
+        else
+          "<script src='#{expand_javascript_path(script)}'></script>"
+        end
+      end
+      
+      # Spits out javascript tags for all declared scripts, one per line.
+      def javascript_tags
+        javascripts.collect{|s| javascript_tag(s)}.join("\n")
       end
       
     end
