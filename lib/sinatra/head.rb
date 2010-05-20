@@ -23,7 +23,7 @@ module Sinatra
       app.helpers TagHelpers
       
       app.configure do
-        app.set :charset, 'UTF-8'
+        app.set :charset, 'utf-8'
 
         app.set :title, []
         app.set :title_separator, ' | '

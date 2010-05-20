@@ -19,13 +19,13 @@ describe Sinatra::Head do
   
   it "has a meta tag for the charset" do
     within 'head' do
-      page.should have_css("meta[charset='UTF-8']")
+      page.should have_css("meta[charset='utf-8']")
     end
   end
   
   it "lets you override the charset" do
     class DummyGrandkid < DummyFixture::DummyChild
-      set :charset, 'ISO-8859-1'
+      set :charset, 'iso-8859-1'
       get '/new' do
         title << 'Really Low Level'
         haml "This is something new."
@@ -35,7 +35,7 @@ describe Sinatra::Head do
 
     visit '/'
     within 'head' do
-      page.should have_css("meta[charset='ISO-8859-1']")
+      page.should have_css("meta[charset='iso-8859-1']")
     end    
   end
   

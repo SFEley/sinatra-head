@@ -1,7 +1,7 @@
 Sinatra::Head
 =============
              
-This is a simple asset and `<head>' tag manager for Sinatra projects.  It allows dynamically adding or 
+This is a simple asset and `<head>` tag manager for Sinatra projects.  It allows dynamically adding or 
 changing stylesheets, javascript includes, or the page title at any level of Sinatra class inheritance 
 or within an action.
 
@@ -11,9 +11,9 @@ You should know this part:
     
     $ gem install sinatra-head
 
-(Or `sudo gem install` if you're the last person on Earth who isn't using [RVM][6] yet.)
+(Or `sudo gem install` if you're the last person on Earth who isn't using [RVM][1] yet.)
 
-If you're developing a Sinatra ['classic'][7] application, then all you need to do is require the library:
+If you're developing a Sinatra ['classic'][2] application, then all you need to do is require the library:
 
     # blah_app.rb
     require 'sinatra'
@@ -27,131 +27,143 @@ If you're developing a Sinatra ['classic'][7] application, then all you need to 
       stylesheets << 'blah.css'
     end
     
-Then, in your layout, just include the `head_tag` helper instead of creating your own 
+Then, in your layout, just call the `head_tag` helper:
 
-If you're using the [Sinatra::Base][7] style, you also need to register the extension:
+    # views/layout.haml
+    %html
+      =head_tag
+      %body
+        =yield
+
+When called, you'll see a head that sets the charset to UTF-8, "**Feeling blah | My Wonderful App**" as the page title, and 
+includes both */stylesheets/main.css* and *stylesheets/blah.css*.  You can override the default choices here with Sinatra settings.
+
+If you're using the [Sinatra::Base][2] style, you also need to register the extension:
 
     # bleh_app.rb
     require 'sinatra/base'
-    require 'sinatra/flash'
+    require 'sinatra/head'
     
     class BlehApp < Sinatra::Base
-      enable :sessions
-      register Sinatra::Flash
+      register Sinatra::Head
       
-      get '/bleh' do
-        if flash[:blah]
-          # The flash collection is cleared after any request that uses it
-          "Have you ever felt blah? Oh yes. #{flash[:blah]} Remember?"
-        else
-          "Oh, now you're only feeling bleh?"
-        end
-      end
+      # Everything else is the same as the 'classic' example above.
     end
     
-See the Sinatra documentation on [using extensions][8] for more detail and rationale.
+See the Sinatra documentation on [using extensions][3] for more detail and rationale.
 
-styled_flash
+Head element
 ------------
-The gem comes with a handy view helper that iterates through current flash messages and renders them in styled HTML:
+**Tag helpers:** `head_tag`
 
-    # Using HAML, 'cause the cool kids are all doing it
-    %html
-      %body
-        =styled_flash
+This extension is all about the head and the layout.  Accordingly, there's a convenient `head_tag` helper that puts together the four other elements described below:
 
-Yields (assuming three flash messages with different keys):
-
-    <html>
-      <body>
-        <div id='flash'>
-          <div class='flash info'>I'm sorry, Dave. I'm afraid I can't do that.</div>
-          <div class='flash warning'>This mission is too important for me to allow you to jeopardize it.</div>
-          <div class='flash fatal'>Without your space helmet, Dave, you're going to find reaching the emergency airlock rather difficult.</div>
-        </div>
-      </body>
-    </html>
-          
-Styling the CSS for the #flash id, the .flash class, or any of the key-based classes is entirely up to you.  
-
-(_Side note:_ This view helper was my initial reason for making this gem. I'd gotten used to pasting this little method in on every Rails project, and when I switched to Sinatra was distraught to discover that [Rack::Flash][2] couldn't do it, because the FlashHash isn't really a hash and you can't iterate it. Reinventing flash was sort of a side effect.)
-
-Advanced Tips
--------------
-### Now vs. Next
-The flash object acts like a hash, but it's really _two_ hashes:
-
-* The **now** hash displays messages for the current request.
-* The **next** hash stores messages to be displayed in the _next_ request.
-
-When you access the **flash** helper, the _now_ hash is initialized from a session value.  (Named `:flash` by default, but see 'Scoped Flash' below.)  Every method except assignment (`[]=`) is delegated to _now_; assignments occur on the _next_ hash.  At the end of the request, a Sinatra `after` hook sets the session value to the _next_ hash, effectively rotating it to _now_ for the next request that uses it.
-
-This is usually what you want, and you don't have to worry about the details.  However, you occasionally want to set a message to display during _this_ request, or access values that are coming up.  In these cases you can access the `.now` and `.next` hashes directly:
-
-    # This will be displayed during the current request
-    flash.now[:error] = "We're shutting down now.  Goodbye!"
+    <head>
+      <meta charset='UTF-8' />
+      <title>All title elements | as appended using the 'title' call | in reverse order</title>
+      <link rel='stylesheet' href='/stylesheets/first.css' />
+      <!-- ...other stylesheets as declared in order... -->
+      <script src="/javascript/first.js"></script>
+      <!-- ...other javascripts as declared in order... -->
+    </head>
     
-    # Look at messages upcoming in the next request
-    @weapon = Stake.new if flash.next[:warning] == "The vampire is attacking."
+If you want something more or something different, you can of course skip this and call the other _*\_tag_ methods any way you want.
+
+*A note on style:* My markup flavor of choice is [HTML5][4]. HTML5 is backwards compatible with everything and does not require self-closing tags. However, some of you may be using XHTML, and I don't want to break your stuff over a minor religious difference. So the `meta` and `link` tags are self-closed, to keep your validators from complaining and because it doesn't really hurt anyone else.
+
+Charset
+-------
+**Sinatra settings:** `:charset`  
+**Tag helpers:** `charset_tag`
+
+It's best practice for all Web pages to declare their encoding -- even if the server _should_ be doing it, even if you only use ASCII, etc. etc. **Sinatra::Head** makes an opinionated choice and sets this to **utf-8** for you, but you can override it if you want:
+
+    set :charset, 'shift-jis'
+
+You are of course responsible for making sure that the page output keeps any encoding promise you make.  If you're using Ruby 1.9, it's a good idea to set the `Encoding.default_internal` value to utf-8 as well.  Also note that using Sinatra's **content_type** helper will override this for any page by setting the HTTP headers directly, which take precedence over `<meta>` tags.
+
+*A note on meta tags:* Someone is doubtless going to ask what happened to the _http-equiv_ or _content_ attributes. [This][5] is my short answer. If this fails to validate for any common use case, let me know.
+
+Title
+-----
+**Sinatra settings:** `:title`, `:title_separator`  
+**Data helpers:** `title`, `title=`, `title_string`  
+**Tag helpers:** `title_tag`
+
+Multi-part titles that describe the page, the category, and the site are standard practice for SEO and other reasons. **Sinatra::Head** manages this by setting up **title** as a Sinatra setting with an empty array and letting you add to it:
+
+    title << 'Site'
+    title << 'Page' # => 'Page | Site'
+
+Note that the title chain unspools in LIFO order, not FIFO.  (I.e., it's a stack, not a queue.)
+
+If you want to blow away this chain for a single action, we do have a `title=` helper for the purpose. You can also change the separator from ` | ` to anything you want with the `:title_separator` setting.
+
+Stylesheets
+-----------
+**Sinatra settings:** `:stylesheets`, `:stylesheet_path`  
+**Data helpers:** `stylesheets`, `expand_stylesheet_path`  
+**Tag helpers:** `stylesheet_tag`, `stylesheet_tags`
+
+Like the _title_ setting, the _stylesheets_ setting begins life as an empty array.  Thus, you can add sheets to it at any time.  Simple filenames will have the *stylesheet_path* setting prepended for a consistent relative path (it defaults simply to _"stylesheets"_); hyperlinks beginning with `http:` or `https:` will not be touched.
+
+    stylesheets << 'main.css'
+    stylesheets << 'http://someothersite.org/popular_css_extension.css'
     
-In practice, you'll probably want to set `.now` any time you're displaying errors with an immediate render instead of redirecting.  It's hard to think of a common reason to check `.next` -- but it's there if you want it.
-
-### Keep, Discard, and Sweep
-These convenience methods allow you to modify the standard rotation cycle, and are based directly on the [Rails flash API][4]:
-
-    flash.keep               # Will show all messages again
-    flash.keep(:groundhog)   # Will show the message on key :groundhog again
-    flash.discard            # Clears the next messages without showing them
-    flash.discard(:amnesia)  # Clears only the message on key :amnesia
-    flash.sweep              # Rotates the flash manually, discarding _now_ and moving _next_ into its place
-
-### Sessions
-The basic _concept_ of flash messages relies on having an active session for your application. Sinatra::Flash is built on the assumption that Sinatra's `session` helper points to something that will persist beyond the current request. You are responsible for ensuring that it does.  No other assumptions are made about the session -- you can use any [session strategy][17] you like.
-
-(**Note:** Early versions of this extension attempted to detect the absence of a session and create one for you at the last moment. Thanks to [rkh][15] for [pointing out][16] that this is unreliable in Sinatra. You'll have to be a grownup now )
-
-### Scoped Flash
-If one flash collection isn't exciting enough for your application stack, you can have multiple sets of flash messages scoped by a symbol. Each has its own lifecycle and will _not_ be rotated by any Web request that ignores it.
-
-    get "/complicated" do
-      flash(:one)[:hello] = "This will appear the next time flash(:one) is called"
-      flash(:two).discard(:hello)  # Clear a message someone else set on flash(:two)
-      "A message for you on line three: #{flash(:three)[:hello]}"
+    get '/blah' do
+      stylesheets << 'specific.css'
     end
 
-Both the **flash** and **styled_flash** helper methods accept such keys as optional parameters. If don't specify one, the default key is `:flash`.  Whatever keys you use will become session keys as well, so take heed that you don't run into naming conflicts.
+In your layout, you can call the `stylesheet_tag` helper for a single filename or URL you provide, or the `stylesheet_tags` helper which walks the array and creates a tag for each.  (In FIFO or queue order, unlike _title._)
 
-Do you need this? Probably not. The principal use case is for complex application stacks in which some messages are only relevant within specific subsystems. If you _do_ use it, be sure to model your message flows carefully, and don't confuse collection keys with message keys.
+Currently nothing is done for nicer asset packaging, fingerprinting, compressing, etc. There's [Rack][10] [middleware][9] for some of it, and future iterations may include these features. If you'd really really like to see them, [create an issue][7] and ask for them.
+
+Javascripts
+-----------
+**Sinatra settings:** `:javascripts`, `:javascript_path`  
+**Data helpers:** `javascripts`, `expand_javascript_path`  
+**Tag helpers:** `javascript_tag`, `javascript_tags`
+
+These helpers are functionally very similar to the _stylesheets_ ones, allowing the addition of relative filenames (which will be expanded with the *javascript_path* setting) or full URLs.  One wrinkle here is that you can _also_ include inline code:
+
+    javascripts << 'main.js'
+    javascripts << 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'
+    
+    get '/blah' do
+      javascripts << %q[
+        window.onload = function(){
+          some_silly_thing;
+        };]
+    end
+
+Inline code is detected by the presence of a semicolon, and will be included as the body of the `<script>` tag rather than as the **src=** attribute.  (So if you have semicolons in your scripts' filenames or URLs...  _What were you thinking?_)
+
+As noted above for stylesheets, right now there are no facilities to minify, compress, or recombobulate your Javascript. Also as noted, [feel free to ask][7] or contribute.
 
 Credit, Support, and Contributions
 ----------------------------------
-This extension is the fault of **Stephen Eley**. You can reach me at <sfeley@gmail.com>. If you like science fiction stories, I know a [good podcast][9] for them as well.
+This extension is the fault of **Stephen Eley**. You can reach me at <sfeley@gmail.com>. If you like science fiction stories, I know a [good podcast][6] for them as well.
 
-If you find bugs, please report them on the [Github issue tracker][10]. 
+If you find bugs, please report them on the [Github issue tracker][7]. 
 
-The documentation can of course be found on [RDoc.info][11].
+The documentation can of course be found on [RDoc.info][8].
 
-Contributions are welcome. I'm not sure how much more _must_ be done on a flash message extension, but I'm sure there's plenty that _could_ be done.  Please note that the test suite uses RSpec, and you'll need the [Sessionography][14] helper for testing sessions.  (I actually developed Sessionography in order to TDD _this_ gem.)
+Contributions are welcome. This was a quick start to get me some features I needed in a complex stack of Sinatra apps. There's a lot more that _can_ be done on this, but I'll keep sniffing the wind to find out what _should_ be done.
 
 License
 -------
-This project is licensed under the **Don't Be a Dick License**, version 0.2, and is copyright 2010 by Stephen Eley. See the [LICENSE.markdown][12] file or the [DBAD License site][13] for elaboration on not being a dick.
+This project is licensed under the **Don't Be a Dick License**, version 0.2, and is copyright 2010 by Stephen Eley. See the [LICENSE.markdown][11] file or the [DBAD License site][12] for elaboration on not being a dick.
 
 
-[1]: http://sinatrarb.com
-[2]: http://nakajima.github.com/rack-flash/
-[3]: http://api.rubyonrails.org/classes/ActionController/Flash.html
-[4]: http://api.rubyonrails.org/classes/ActionController/Flash/FlashHash.html
-[5]: http://yardoc.org
-[6]: http://rvm.beginrescueend.com
-[7]: https://sinatra.lighthouseapp.com/projects/9779/tickets/240-sinatrabase-vs-sinatradefault-vs-sinatraapplication
-[8]: http://www.sinatrarb.com/extensions-wild.html
-[9]: http://escapepod.org
-[10]: http://github.com/SFEley/sinatra-flash/issues
-[11]: http://rdoc.info/projects/SFEley/sinatra-flash
-[12]: http://github.com/SFEley/sinatra-flash/blob/master/LICENSE.markdown
-[13]: http://dbad-license.org
-[14]: http://github.com/SFEley/sinatra-sessionography
-[15]: http://github.com/rkh
-[16]: http://github.com/SFEley/sinatra-flash/issues/issue/1
-[17]: http://www.sinatrarb.com/faq.html#sessions
+[1]: http://rvm.beginrescueend.com
+[2]: https://sinatra.lighthouseapp.com/projects/9779/tickets/240-sinatrabase-vs-sinatradefault-vs-sinatraapplication
+[3]: http://www.sinatrarb.com/extensions-wild.html
+[4]: http://diveintohtml5.org/semantics.html
+[5]: http://diveintohtml5.org/semantics.html#encoding
+[6]: http://escapepod.org
+[7]: http://github.com/SFEley/sinatra-head/issues
+[8]: http://rdoc.info/projects/SFEley/sinatra-head
+[9]: http://coderack.org/users/chriskottom/middlewares/66-rackdomainsprinkler
+[10]: http://rack.rubyforge.org/doc/Rack/Static.html
+[11]: http://github.com/SFEley/sinatra-head/blob/master/LICENSE.markdown
+[12]: http://dbad-license.org
