@@ -3,15 +3,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 describe Sinatra::Head, "titles" do
   include DummyFixture
   
-  
-  class DummyFixture::DummyApp
-    title << 'High Level'
-  end
-  
-  class DummyFixture::DummyChild
-    title << 'Mid-Level'
-  end
-  
+
   before(:each) do
     @instance = app.new
   end
@@ -32,6 +24,11 @@ describe Sinatra::Head, "titles" do
   it "can be overridden" do
     @instance.title = 'Kaboom!'
     @instance.title.should == ['Kaboom!']
+  end
+  
+  it "leaves its superclass's value alone" do
+    instance = DummyFixture::DummyApp.new
+    instance.title.should == ['High Level']
   end
   
   it "returns itself as a string" do

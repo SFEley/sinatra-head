@@ -4,15 +4,6 @@ describe Sinatra::Head, "javascripts" do
   include DummyFixture
   
   
-  class DummyFixture::DummyApp
-    javascripts << 'main.js'
-  end
-  
-  class DummyFixture::DummyChild
-    javascripts << 'secondary.js'
-    set :javascript_path, '/things/javascript'
-  end
-  
   before(:each) do
     app DummyFixture::DummyChild
     @instance = app.new
@@ -31,6 +22,10 @@ describe Sinatra::Head, "javascripts" do
     @instance.javascripts.should == ['main.js', 'secondary.js', 'specific.js']
   end
 
+  it "leaves its superclass's value alone" do
+    instance = DummyFixture::DummyApp.new
+    instance.javascripts.should == ['main.js']
+  end
   
   it "expands the assets path for relative filenames" do
     @instance.expand_javascript_path(@instance.javascripts.first).should == '/things/javascript/main.js'

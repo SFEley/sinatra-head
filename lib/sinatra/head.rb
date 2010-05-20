@@ -6,18 +6,6 @@ require 'sinatra/head/tag_helpers'
 module Sinatra
   module Head
     
-    # # Exposes the 'title' setting so that it can be overwritten or appended to.
-    # # @see DataHelpers#title
-    # def title
-    #   settings.title
-    # end
-    # 
-    # # Exposes the 'stylesheets' setting so that it can be overwritten or appended to.
-    # # @see DataHelpers#stylesheets
-    # def stylesheets
-    #   settings.stylesheets
-    # end
-    
     def self.registered(app)
       app.helpers DataHelpers
       app.helpers TagHelpers
@@ -35,5 +23,14 @@ module Sinatra
         app.set :javascript_path, '/javascript'        
       end
     end
+    
+    def inherited(child)
+      super
+      # Copy our arrays, because otherwise changes on subclasses will go upwards to superclasses
+      child.set :title, title.clone
+      child.set :stylesheets, stylesheets.clone
+      child.set :javascripts, javascripts.clone
+    end
+
   end
 end

@@ -5,12 +5,9 @@ describe Sinatra::Head, "stylesheets" do
   
   
   class DummyFixture::DummyApp
-    stylesheets << 'main.css'
   end
   
   class DummyFixture::DummyChild
-    stylesheets << 'secondary.css'
-    set :stylesheet_path, '/stuff/stylesheets'
   end
   
   before(:each) do
@@ -31,6 +28,10 @@ describe Sinatra::Head, "stylesheets" do
     @instance.stylesheets.should == ['main.css', 'secondary.css', 'specific.css']
   end
 
+  it "leaves its superclass's value alone" do
+    instance = DummyFixture::DummyApp.new
+    instance.stylesheets.should == ['main.css']
+  end
   
   it "expands the assets path for relative filenames" do
     @instance.expand_stylesheet_path(@instance.stylesheets.first).should == '/stuff/stylesheets/main.css'

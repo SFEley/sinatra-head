@@ -8,6 +8,9 @@ module DummyFixture
     enable :inline_templates
   
     register Sinatra::Head
+    title << 'High Level'
+    stylesheets << 'main.css'
+    javascripts << 'main.js'
   
     get "/" do
       haml :index
@@ -15,6 +18,14 @@ module DummyFixture
   end
   
   class DummyChild < DummyApp
+    title << 'Mid-Level'
+    
+    stylesheets << 'secondary.css'
+    set :stylesheet_path, '/stuff/stylesheets'
+    
+    javascripts << 'secondary.js'
+    set :javascript_path, '/things/javascript'
+    
   end
   
   def app(klass=nil)
