@@ -114,6 +114,12 @@ Like the _title_ setting, the _stylesheets_ setting begins life as an empty arra
       stylesheets << 'specific.css'
     end
 
+If your stylesheet string contains a space, the second and any following words will be used for the _media_ attribute:
+
+    stylesheets << 'no_effects.css print braille'
+    # yields:
+    <link rel='stylesheet' href='/stylesheets/no_effects.css' media='print, braille' />
+    
 In your layout, you can call the `stylesheet_tag` helper for a single filename or URL you provide, or the `stylesheet_tags` helper which walks the array and creates a tag for each.  (In FIFO or queue order, unlike _title._)
 
 Currently nothing is done for nicer asset packaging, fingerprinting, compressing, etc. There's [Rack][10] [middleware][9] for some of it, and future iterations may include these features. If you'd really really like to see them, [create an issue][7] and ask for them.

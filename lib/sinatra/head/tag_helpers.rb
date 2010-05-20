@@ -35,10 +35,17 @@ module Sinatra
 
       # Spits out a <link rel='stylesheet'> element for the given stylesheet reference.
       # Relative filenames will be expanded with the Sinatra assets path, if set.
+      # If the filename string contains multiple words (separated by spaces), all
+      # words after the first will be used for _media_ identifiers.
       #
       # @param [String] sheet
-      def stylesheet_tag(sheet)
-        "<link rel='stylesheet' href='#{expand_stylesheet_path(sheet)}' />"
+      def stylesheet_tag(reference)
+        sheet, *media = reference.split
+        if media.empty?
+          "<link rel='stylesheet' href='#{expand_stylesheet_path(sheet)}' />"
+        else
+          "<link rel='stylesheet' href='#{expand_stylesheet_path(sheet)}' media='#{media.join(', ')}' />"
+        end
       end
       
       # Spits out stylesheet tags for all declared stylesheets, one per line.

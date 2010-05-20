@@ -45,6 +45,10 @@ describe Sinatra::Head, "stylesheets" do
   it "knows how to make a tag" do
     @instance.stylesheet_tag(@instance.stylesheets.first).should == "<link rel='stylesheet' href='/stuff/stylesheets/main.css' />"
   end
+
+  it "can make a stylesheet tag just for a specific medium" do
+    @instance.stylesheet_tag('print.css print braille').should == "<link rel='stylesheet' href='/stuff/stylesheets/print.css' media='print, braille' />"
+  end
   
   it "knows how to make all the tags" do
     @instance.stylesheets << 'http://yahoo.com/yahoo_style.css'
