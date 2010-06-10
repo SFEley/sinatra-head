@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{sinatra-head}
-  s.version = "0.1.1"
+  s.version = "0.1.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Stephen Eley"]
-  s.date = %q{2010-05-20}
+  s.date = %q{2010-06-10}
   s.description = %q{Sinatra::Head provides class methods and helpers for dynamically controlling the fields in your <HEAD> element that are usually preset in your layout: the page title, stylesheet and javascript assets, etc.  Asset lists are inherited throughout superclasses, subclasses, and within action methods, and basic asset path management is supported.}
   s.email = %q{sfeley@gmail.com}
   s.extra_rdoc_files = [
