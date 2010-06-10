@@ -31,7 +31,7 @@ module Sinatra
       # Returns the title elements you've set, in reverse order, separated by ' | '.  (You can override this with
       # a Sinatra option: `set :title_separator, ' <*> '`)
       def title_string
-        title.reverse.join(settings.title_separator)
+        title.uniq.reverse.join(settings.title_separator)
       end
       
       # Exposes an array of stylesheets.  Can be set at both the class and the instance (action) level.

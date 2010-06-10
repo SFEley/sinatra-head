@@ -22,6 +22,7 @@ describe Sinatra::Head, "javascripts" do
     @instance.javascripts.should == ['main.js', 'secondary.js', 'specific.js']
   end
 
+  
   it "leaves its superclass's value alone" do
     instance = DummyFixture::DummyApp.new
     instance.javascripts.should == ['main.js']
@@ -49,6 +50,11 @@ describe Sinatra::Head, "javascripts" do
   it "knows how to make all the tags" do
     @instance.javascripts << 'http://yahoo.com/yahoo_script.js'
     @instance.javascript_tags.should == "<script src='/things/javascript/main.js'></script>\n<script src='/things/javascript/secondary.js'></script>\n<script src='http://yahoo.com/yahoo_script.js'></script>"
+  end
+  
+  it "only shows a given element once" do
+    @instance.javascripts << 'main.js'
+    @instance.javascript_tags.should_not =~ /main\.js.*main\.js/m
   end
   
   it "shows up in the header" do

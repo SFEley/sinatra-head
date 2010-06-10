@@ -20,7 +20,7 @@ describe Sinatra::Head, "titles" do
     @instance.title << 'Low Level'
     @instance.title.should == ['High Level', 'Mid-Level', 'Low Level']
   end
-  
+    
   it "can be overridden" do
     @instance.title = 'Kaboom!'
     @instance.title.should == ['Kaboom!']
@@ -34,6 +34,11 @@ describe Sinatra::Head, "titles" do
   it "returns itself as a string" do
     @instance.title << 'Low Level'
     @instance.title_string.should == 'Low Level | Mid-Level | High Level'
+  end
+  
+  it "only shows a given element once" do
+    @instance.title << 'Mid-Level'
+    @instance.title_string.should_not =~ /Mid-Level.*Mid-Level/
   end
   
   it "can set a different title separator" do

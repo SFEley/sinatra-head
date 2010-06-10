@@ -55,6 +55,11 @@ describe Sinatra::Head, "stylesheets" do
     @instance.stylesheet_tags.should == "<link rel='stylesheet' href='/stuff/stylesheets/main.css' />\n<link rel='stylesheet' href='/stuff/stylesheets/secondary.css' />\n<link rel='stylesheet' href='http://yahoo.com/yahoo_style.css' />"
   end
   
+  it "only shows a given element once" do
+    @instance.stylesheets << 'main.css'
+    @instance.stylesheet_tags.should_not =~ /main\.css.*main\.css/m
+  end
+  
   it "shows up in the header" do
     visit '/'
     within 'head' do

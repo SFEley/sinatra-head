@@ -50,7 +50,7 @@ module Sinatra
       
       # Spits out stylesheet tags for all declared stylesheets, one per line.
       def stylesheet_tags
-        stylesheets.collect{|s| stylesheet_tag(s)}.join("\n")
+        stylesheets.uniq.collect{|s| stylesheet_tag(s)}.join("\n")
       end
       
       # Spits out a <script src='filename'> element for the given javascript file.
@@ -71,7 +71,7 @@ module Sinatra
       
       # Spits out javascript tags for all declared scripts, one per line.
       def javascript_tags
-        javascripts.collect{|s| javascript_tag(s)}.join("\n")
+        javascripts.uniq.collect{|s| javascript_tag(s)}.join("\n")
       end
       
     end
