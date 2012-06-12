@@ -50,6 +50,11 @@ describe Sinatra::Head, "stylesheets" do
     @instance.stylesheet_tag('print.css print braille').should == "<link rel='stylesheet' href='/stuff/stylesheets/print.css' media='print, braille' />"
   end
   
+  it "can make a stylesheet tag for media queries specifying min and max width" do
+    @instance.stylesheet_splitter = ' | '
+    @instance.stylesheet_tag('tablet.css | screen and (min-width:520px) and (max-width:959px)').should == "<link rel='stylesheet' href='/stuff/stylesheets/tablet.css' media='screen and (min-width:520px) and (max-width:959px)' />"
+  end
+  
   it "knows how to make all the tags" do
     @instance.stylesheets << 'http://yahoo.com/yahoo_style.css'
     @instance.stylesheet_tags.should == "<link rel='stylesheet' href='/stuff/stylesheets/main.css' />\n<link rel='stylesheet' href='/stuff/stylesheets/secondary.css' />\n<link rel='stylesheet' href='http://yahoo.com/yahoo_style.css' />"
