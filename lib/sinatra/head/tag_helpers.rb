@@ -40,7 +40,7 @@ module Sinatra
       #
       # @param [String] sheet
       def stylesheet_tag(reference)
-        sheet, *media = reference.split
+        sheet, *media = reference.split(settings.stylesheet_splitter)
         if media.empty?
           "<link rel='stylesheet' href='#{expand_stylesheet_path(sheet)}' />"
         else

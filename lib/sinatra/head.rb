@@ -18,6 +18,7 @@ module Sinatra
         
         app.set :stylesheets, []
         app.set :stylesheet_path, '/stylesheets'
+        app.set :stylesheet_splitter, ' '
         
         app.set :javascripts, []
         app.set :javascript_path, '/javascript'        
