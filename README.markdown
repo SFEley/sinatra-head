@@ -101,7 +101,7 @@ If you want to blow away this chain for a single action, we do have a `title=` h
 
 Stylesheets
 -----------
-**Sinatra settings:** `:stylesheets`, `:stylesheet_path`  
+**Sinatra settings:** `:stylesheets`, `:stylesheet_path`, `:stylesheet_splitter` 
 **Data helpers:** `stylesheets`, `expand_stylesheet_path`  
 **Tag helpers:** `stylesheet_tag`, `stylesheet_tags`
 
@@ -119,6 +119,13 @@ If your stylesheet string contains a space, the second and any following words w
     stylesheets << 'no_effects.css print braille'
     # yields:
     <link rel='stylesheet' href='/stylesheets/no_effects.css' media='print, braille' />
+    
+If your stylesheet string contains a splitter, you can specify a splitter and use the second portion for the _media_ attribute:
+
+    set :stylesheet_splitter, ' | '
+    stylesheets << 'tablet.css | screen and (min-width:520px) and (max-width:959px)'
+    # yields:
+    <link rel='stylesheet' href='/stylesheets/tablet.css' media='screen and (min-width:520px) and (max-width:959px)' />
     
 In your layout, you can call the `stylesheet_tag` helper for a single filename or URL you provide, or the `stylesheet_tags` helper which walks the array and creates a tag for each.  (In FIFO or queue order, unlike _title._)
 
